@@ -1,0 +1,14 @@
+# started on Thu Jan 13 17:06:02 2022
+
+
+ Performance counter stats for 'system wide' (3 runs):
+
+            113.81 Joules energy-pkg                #    1.829 /sec                     ( +-  4.59% )
+             70.03 Joules energy-cores              #    1.126 /sec                     ( +-  2.71% )
+              1.35 Joules energy-gpu                #    0.022 /sec                     ( +-158.77% )
+             17.04 Joules energy-ram                #    0.274 /sec                     ( +-  2.74% )
+      119635008770        cycles                    #    1.923 GHz                      ( +-  2.62% )
+          60615.39 msec   task-clock                #    7.796 CPUs utilized            ( +-  2.70% )
+
+             7.775 +- 0.202 seconds time elapsed  ( +-  2.60% )
+

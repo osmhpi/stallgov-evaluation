@@ -36,6 +36,8 @@ do
   # and terminate both, if one of them exits.
   # See: https://unix.stackexchange.com/questions/231676/given-two-background-commands-terminate-the-remaining-one-when-either-exits
   ../kernel-module/copy-log.sh -c -i 8 "$workload_name-memutil-log" $(nproc) &
+  # Start logging a short period before running the workload
+  sleep 0.1s
   ../utils/pinpoint-stats.sh "$workload_name-memutil" "$workload" &
   wait -n
   pkill -P $$

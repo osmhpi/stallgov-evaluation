@@ -1,1 +1,5 @@
 frequencies.config
+
+# evaluation output files
+*.txt
+*-memutil-log/

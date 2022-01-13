@@ -21,8 +21,20 @@ do
 
   workload_name=$(basename "$workload")
   set -x
+
+
   cpupower frequency-set -g memutil
-  ../utils/pinpoint-stats.sh "$workload_name-memutil" "$workload"
+  mkdir -p "$workload_name-memutil-log"
+  # Copying the current log will clear it, so we start with a fresh log
+  cp /sys/kernel/debug/memutil/log > /dev/null
+  # Start the copy-log, as well as pinpoint-stats commands in the background
+  # and terminate both, if one of them exits.
+  # See: https://unix.stackexchange.com/questions/231676/given-two-background-commands-terminate-the-remaining-one-when-either-exits
+  ../utils/pinpoint-stats.sh "$workload_name-memutil" "$workload" &
+  ../kernel-module/copy-log.sh -c -i 8 "$workload_name-memutil-log" $(nproc) &
+  wait -n
+  pkill -P $$
+  wait -n # Wait to assure all logs have been copied
 
   cpupower frequency-set -g schedutil
   ../utils/pinpoint-stats.sh "$workload_name-schedutil" "$workload"

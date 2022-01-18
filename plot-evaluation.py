@@ -139,7 +139,7 @@ parser = argparse.ArgumentParser(description="Plot memory bound util performance
                                              "passive-freq.txt), disabled (disabled.txt, disabled-freq.txt)")
 parser.add_argument("workload", metavar="output", type=str, help="name of the workload to plot")
 parser.add_argument("input_folder", metavar="input", type=str, help="path to folder containing all input files")
-parser.add_argument("output_file", metavar="output", type=str, help="output image path")
+parser.add_argument("output_file", metavar="output", nargs='?', type=str, default='', help="output image path - plot will be displayed if left empty")
 parser.add_argument("--show_deviation", "-sd", action="store_true", default=False, help="Show deviation around plots")
 parser.add_argument("--first_plot", "-fp", default="energy", type=str, choices=["energy", "time", "power", "edp",
                                                                                 "energy_delay_product"],
@@ -193,7 +193,12 @@ for index, governor in enumerate(governor_measurements):
 
 lines, labels = ax.get_legend_handles_labels()
 ax.legend(additional_lines + lines, additional_labels + labels)
-fig.savefig(args.output_file)
+
+if args.output_file:
+    fig.savefig(args.output_file)
+else:
+    plt.show()
+
 '''
     data.iloc[:, 0:-args.powerColumnsCount].plot.line(ax=axes, colormap="Set1")
     axes.set_xlabel("time (ms)")

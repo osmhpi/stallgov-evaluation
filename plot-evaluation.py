@@ -23,7 +23,7 @@ def parse_frequency(line):
 
 
 def parse_energy(line):
-    match = re.match(r"\s*([0-9,.]+) Joules energy-pkg\s+#\s+[0-9,.]+ /sec\s+\( \+-\s+([0-9,.]+)% \)", line)
+    match = re.match(r"\s*([0-9,.]+) Joules energy-pkg\s+#\s+[0-9,.]+ K?/sec\s+\( \+-\s+([0-9,.]+)% \)", line)
     if not match:
         raise Exception("Error parsing energy measurement line. Line is: " + line)
     energy = match.group(1).replace(thousand_char, "")

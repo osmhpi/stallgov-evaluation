@@ -102,6 +102,7 @@ def plot_energy(ax, color, show_deviation, frequencies, energies, times):
 
     ax.plot(frequencies, avg_energies, color=color, label="package energy")
     ax.set_ylabel("energy (in Joules)")
+    ax.set_ylim(ymin=0)
 
 
 def plot_time(ax, color, show_deviation, frequencies, energies, times):
@@ -114,18 +115,21 @@ def plot_time(ax, color, show_deviation, frequencies, energies, times):
 
     ax.plot(frequencies, avg_times, color=color, label="runtime")
     ax.set_ylabel("runtime (in seconds)")
+    ax.set_ylim(ymin=0)
 
 
 def plot_power(ax, color, show_deviation, frequencies, energies, times):
     y_values = list(map(lambda entry: entry[0][0] / entry[1][0], zip(energies, times)))
     ax.plot(frequencies, y_values, color=color, label="power")
     ax.set_ylabel("power (W)")
+    ax.set_ylim(ymin=0)
 
 
 def plot_energy_delay_product(ax, color, show_deviation, frequencies, energies, times):
     y_values = list(map(lambda entry: entry[0][0] * entry[1][0], zip(energies, times)))
     ax.plot(frequencies, y_values, color=color, label="energy delay product")
     ax.set_ylabel("energy delay product (J*s)")
+    ax.set_ylim(ymin=0)
 
 
 parser = argparse.ArgumentParser(description="Plot memory bound util performance data. Use the pinpoint-frequencies "

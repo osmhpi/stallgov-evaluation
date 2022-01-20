@@ -188,8 +188,12 @@ if args.second_plot != "none":
     colormap_offset = 2
 
 for index, governor in enumerate(governor_measurements):
-    ax.axvline(governor_measurements[governor][0], linestyle="--", label=governor,
-               color=colormap(index+colormap_offset))
+    ax.scatter([governor_measurements[governor][0]], [governor_measurements[governor][1][0]],
+               marker='x', s=100, label=governor)
+    # Reenable the following code to draw an x-line instead
+    # of a point for each measured governor.
+    #  ax.axvline(governor_measurements[governor][0], linestyle="--", label=governor,
+               #  color=colormap(index+colormap_offset))
 
 lines, labels = ax.get_legend_handles_labels()
 ax.legend(additional_lines + lines, additional_labels + labels)

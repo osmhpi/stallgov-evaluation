@@ -9,7 +9,7 @@ if [[ ! -f "frequencies.config" ]]; then
   echo "See frequencies.config.example for an example file."
   echo ""
   echo "You can get access to all available frequencies with:"
-  echo "        cpupower frequency-info"
+  echo "        $CPUPOWER frequency-info"
   exit 1
 fi
 
@@ -18,7 +18,11 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-GOVERNOR=$(cpupower frequency-info -p | awk '/^.+The governor/ { gsub(/"/,""); print $3 }')
+if [ -z $CPUPOWER ]; then
+    CPUPOWER=cpupower
+fi
+
+GOVERNOR=$($CPUPOWER frequency-info -p | awk '/^.+The governor/ { gsub(/"/,""); print $3 }')
 
 for workload in "$@"
 do
@@ -28,7 +32,7 @@ do
   set -x
 
 
-  cpupower frequency-set -g memutil
+  $CPUPOWER frequency-set -g memutil
   mkdir -p "$workload_name-memutil-log"
   # Copying the current log will clear it, so we start with a fresh log
   cp /sys/kernel/debug/memutil/log /dev/null
@@ -43,7 +47,7 @@ do
   pkill -P $$
   wait -n # Wait to assure all logs have been copied
 
-  cpupower frequency-set -g schedutil
+  $CPUPOWER frequency-set -g schedutil
   ../utils/pinpoint-stats.sh "$workload_name-schedutil" "$workload"
 
   ../utils/pinpoint-frequencies.sh "$workload" $(head -1 frequencies.config)
@@ -51,4 +55,4 @@ do
 done
 
 echo "Restoring frequency governor to: $GOVERNOR"
-cpupower frequency-set -g "$GOVERNOR"
+$CPUPOWER frequency-set -g "$GOVERNOR"

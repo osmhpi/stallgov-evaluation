@@ -113,7 +113,7 @@ def plot_time(ax, color, show_deviation, frequencies, energies, times):
     if show_deviation:
         ax.fill_between(frequencies, max_times, min_times, alpha=0.5, linewidth=0, color=color)
 
-    ax.plot(frequencies, avg_times, color=color, label="runtime")
+    ax.plot(frequencies, avg_times, color=color, label="execution time")
     ax.set_ylabel("runtime (in seconds)")
     ax.set_ylim(ymin=0)
 
@@ -161,7 +161,6 @@ plot_map = {"energy": plot_energy, "time": plot_time, "power": plot_power, "edp"
 
 fixed_frequency_measurements = read_frequency_measurements(args.input_folder, args.workload)
 governor_measurements = read_governor_measurements(args.input_folder, args.workload)
-fixed_frequency_measurements.extend(governor_measurements.values())
 fixed_frequency_measurements.sort(key=itemgetter(0))
 
 frequency_energies = list(map(lambda entry: entry[1], fixed_frequency_measurements))
@@ -181,15 +180,22 @@ colormap_offset = 1
 
 additional_lines = []
 additional_labels = []
+ax2 = None
 if args.second_plot != "none":
     ax2 = ax.twinx()
     plot_map[args.second_plot](ax2, colormap(1), args.show_deviation, frequencies, frequency_energies, frequency_times)
     additional_lines, additional_labels = ax2.get_legend_handles_labels()
     colormap_offset = 2
 
+governor_marker = ['+', 'x', 'o', 's', '<', '>']
+
 for index, governor in enumerate(governor_measurements):
     ax.scatter([governor_measurements[governor][0]], [governor_measurements[governor][1][0]],
-               marker='x', s=100, label=governor)
+               marker=governor_marker[index], c='red', s=80, label=governor + " - Energy")
+    if ax2:
+        ax2.scatter([governor_measurements[governor][0]], [governor_measurements[governor][2][0]],
+                   marker=governor_marker[index], s=80, c='blue', label=governor + " - Execution Time")
+        additional_lines, additional_labels = ax2.get_legend_handles_labels()
     # Reenable the following code to draw an x-line instead
     # of a point for each measured governor.
     #  ax.axvline(governor_measurements[governor][0], linestyle="--", label=governor,

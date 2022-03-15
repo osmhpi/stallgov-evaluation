@@ -1,0 +1,35 @@
+## math
+primesieve
+viennacl
+
+## image/video/audio codecs
+webp
+svt-vp9
+encode-flac
+
+## build systems
+build-apache
+
+## compression/decompression
+compress-7zip
+system/compress-pbzip2
+
+## memory
+mcperf
+multichase
+mbw
+
+## cryptography
+openssl
+
+## database
+redis
+system/sqlite
+
+## raytracing
+tachyon
+embree
+
+## benchmarks
+swet
+sysbench

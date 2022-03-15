@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Ubuntu / Debian install script
+Ubuntu / Debian install script
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -15,3 +15,15 @@ sudo gdebi phoronix-test-suite.deb --non-interactive
 rm phoronix-test-suite.deb
 
 phoronix-test-suite --version
+
+TEST_LIST_FILE="openbenchmarking.tests"
+TESTS=""
+while read -r testname comment; do
+    TESTS="${TESTS} ${testname}"
+done < <(grep -v '^#' $TEST_LIST_FILE)
+
+for TEST in ${TESTS}; do
+    echo "installing ${TEST}"
+    phoronix-test-suite install-dependencies ${TEST}
+    phoronix-test-suite install ${TEST}
+done

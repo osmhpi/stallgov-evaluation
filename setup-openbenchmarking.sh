@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-Ubuntu / Debian install script
+# Ubuntu / Debian install script
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -24,6 +24,6 @@ done < <(grep -v '^#' $TEST_LIST_FILE)
 
 for TEST in ${TESTS}; do
     echo "installing ${TEST}"
-    phoronix-test-suite install-dependencies ${TEST}
-    phoronix-test-suite install ${TEST}
+    # phoronix-test-suite install-dependencies ${TEST}
+    phoronix-test-suite batch-install ${TEST}
 done

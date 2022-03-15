@@ -19,7 +19,7 @@ Look at  the `frequencies.config.example` file to see how to format the frequenc
 
 Example:
 ``` bash
-./evaluate_benchmarks.sh ../utils/workload-primes ../utils/workload-pointer-chasing
+./evaluate_benchmarks.sh utils/workload-primes utils/workload-pointer-chasing
 ```
 
 ### Output

@@ -1,0 +1,188 @@
+diff --git a/src/Sampler.cpp b/src/Sampler.cpp
+index 14b3315..7089cbe 100644
+--- a/src/Sampler.cpp
++++ b/src/Sampler.cpp
+@@ -6,6 +6,11 @@
+ #include <condition_variable>
+ #include <thread>
+ 
++#include <cstring>
++#include <cassert>
++#include <fcntl.h>
++#include <unistd.h>
++
+ 
+ struct SamplerDetail
+ {
+@@ -22,6 +27,8 @@ struct SamplerDetail
+ 
+ 	long ticks;
+ 
++	std::chrono::high_resolution_clock::time_point start_time;
++
+ 	SamplerDetail(std::chrono::milliseconds sampling_interval):
+ 		interval(sampling_interval),
+ 		startable(false),
+@@ -45,11 +52,16 @@ Sampler::Sampler(std::chrono::milliseconds interval, const std::vector<std::stri
+ 		counters.push_back(counter);
+ 	}
+ 
+-	std::function<void()> atick  = [this]{accumulate_tick();};
+-	std::function<void()> cptick = [this]{continuous_print_tick();};
++	std::function<void(const std::chrono::high_resolution_clock::time_point)> atick  = [this](const std::chrono::high_resolution_clock::time_point entryTime){accumulate_tick();};
++	std::function<void(const std::chrono::high_resolution_clock::time_point)> cptick = [this](const std::chrono::high_resolution_clock::time_point entryTime){continuous_print_tick(entryTime);};
+ 
+ 	if (continuous_print_flag && continuous_header_flag) {
+-		for (auto & s : counterOrAliasNames) m_detail->csv_header += s + ",";
++        m_detail->csv_header += "Time,";
++	    const auto frequencyCount = retrieveProcessorFrequencies().size();
++	    for (int i = 0; i < frequencyCount; ++i) {
++	        m_detail->csv_header += "CPU " + std::to_string(i) + " MHZ,";
++	    }
++		for (auto & s : counterOrAliasNames) m_detail->csv_header += s + " mW,";
+ 		m_detail->csv_header.back() = '\n';
+ 	}
+ 
+@@ -71,6 +83,7 @@ long Sampler::ticks() const
+ void Sampler::start(std::chrono::milliseconds delay)
+ {
+ 	std::this_thread::sleep_for(delay);
++	m_detail->start_time = std::chrono::high_resolution_clock::now();
+ 	m_detail->startable = true;
+ 	m_detail->start_signal.notify_one();
+ }
+@@ -90,7 +103,7 @@ Sampler::result_t Sampler::stop(std::chrono::milliseconds delay)
+ 	return result;
+ }
+ 
+-void Sampler::run(std::function<void()> tick)
++void Sampler::run(std::function<void(const std::chrono::high_resolution_clock::time_point)> tick)
+ {
+ 	std::unique_lock<std::mutex> lk(m_detail->start_mutex);
+ 	m_detail->start_signal.wait(lk, [this]{ return m_detail->startable.load(); });
+@@ -100,7 +113,7 @@ void Sampler::run(std::function<void()> tick)
+ 	while (!m_detail->done.load()) {
+ 		// FIXME: tiny skid by scheduling + now(). Global start instead?
+ 		auto entry = std::chrono::high_resolution_clock::now();
+-		tick();
++		tick(entry);
+ 		m_detail->ticks++;
+ 		std::this_thread::sleep_until(entry + m_detail->interval);
+ 	}
+@@ -113,12 +126,27 @@ void Sampler::accumulate_tick()
+ 	}
+ }
+ 
+-void Sampler::continuous_print_tick()
++void Sampler::continuous_print_tick(const std::chrono::high_resolution_clock::time_point entryTime)
+ {
+-	static char buf[255];
++	static char buf[500];
+ 	size_t avail = sizeof(buf);
+ 	size_t pos = 0;
+ 	size_t nbytes;
++
++	const auto time_since_start = std::chrono::duration_cast<std::chrono::milliseconds>(entryTime - m_detail->start_time);
++	std::string timeSinceStartStr = std::to_string(time_since_start.count());
++	std::strncpy(buf, timeSinceStartStr.c_str(), timeSinceStartStr.size());
++    pos = timeSinceStartStr.size();
++	buf[pos++] = ',';
++
++	for (const auto frequency : retrieveProcessorFrequencies()) {
++	    const std::string frequencyString = std::to_string(frequency);
++	    std::strncpy(buf+pos, frequencyString.c_str(), frequencyString.size());
++	    pos += frequencyString.size();
++	    buf[pos++] = ',';
++	}
++	avail = sizeof(buf)-pos;
++
+ 	for (auto & dev: counters) {
+ 		nbytes = dev->read_mW_string(buf + pos, avail);
+ 		pos += nbytes;
+@@ -128,3 +156,64 @@ void Sampler::continuous_print_tick()
+ 	buf[pos - 1] = '\0';
+ 	puts(buf);
+ }
++
++std::vector<uint32_t> Sampler::retrieveProcessorFrequencies()
++{
++    static constexpr char startString[] = "cpu MHz";
++    static constexpr int startStringSize = sizeof(startString) - 1;
++    constexpr ssize_t readBlockSize = 1000;
++    static std::vector<char> buffer(20000);
++
++    std::vector<uint32_t> frequencies;
++    frequencies.reserve(32);
++
++    const auto cpuinfoFd = open("/proc/cpuinfo", O_RDONLY);
++    if (cpuinfoFd == -1) {
++        throw std::runtime_error("Failed opening /proc/cpuinfo");
++    }
++
++    size_t bufferOffset = 0;
++    while(true) {
++        if ((buffer.size() - bufferOffset) < readBlockSize) {
++            buffer.resize((2*buffer.size())+readBlockSize);
++        }
++        const auto readByteCount = read(cpuinfoFd, buffer.data() + bufferOffset, readBlockSize);
++        if (readByteCount < 0) {
++            close(cpuinfoFd);
++            throw std::runtime_error("Failed reading /proc/cpuinfo");
++        }
++        bufferOffset += readByteCount;
++        if (readByteCount < readBlockSize) {
++            break;
++        }
++    }
++    close(cpuinfoFd);
++    buffer[bufferOffset] = 0;
++    for (ssize_t byteIndex = 0; byteIndex <= (bufferOffset-startStringSize);) {
++        if (strncmp(startString, buffer.data() + byteIndex, startStringSize) == 0) {
++            const auto startByteIndex = byteIndex;
++            byteIndex = findNewline(buffer.data(), byteIndex) + 1;
++            frequencies.push_back(parseFrequency(buffer.data(), startByteIndex, byteIndex-1)); //-1 to point to newline / EOF (nullbyte)
++        } else {
++            byteIndex = findNewline(buffer.data(), byteIndex) + 1;
++        }
++    }
++    return frequencies;
++}
++
++ssize_t Sampler::findNewline(char* buf, const ssize_t startByteIndex)
++{
++    ssize_t index = startByteIndex;
++    while (buf[index] != '\n' && buf[index] != 0) {
++        index++;
++    }
++    return index;
++}
++
++uint32_t Sampler::parseFrequency(char* buf, const ssize_t startByteIndex, const ssize_t endByteIndex)
++{
++    std::string line{buf + startByteIndex, static_cast<size_t>(endByteIndex - startByteIndex)};
++    const auto separatorPos = line.find(':');
++    assert(separatorPos != std::string::npos);
++    return std::stof(line.substr(separatorPos+1));
++}
+diff --git a/src/Sampler.h b/src/Sampler.h
+index 154d513..e99c4c8 100644
+--- a/src/Sampler.h
++++ b/src/Sampler.h
+@@ -25,8 +25,15 @@ struct Sampler
+ private:
+ 	SamplerDetail *m_detail;
+ 
+-	void run(std::function<void()> tick);
++	void run(std::function<void(const std::chrono::high_resolution_clock::time_point)> tick);
+ 
+ 	void accumulate_tick();
+-	void continuous_print_tick();
++	void continuous_print_tick(const std::chrono::high_resolution_clock::time_point entryTime);
++
++	std::vector<uint32_t> retrieveProcessorFrequencies();
++	/**
++	 * @brief returns index of newline or EOF
++	 */
++	ssize_t findNewline(char* buf, const ssize_t startByteIndex);
++	uint32_t parseFrequency(char* buf, const ssize_t startByteIndex, const ssize_t endByteIndex);
+ };

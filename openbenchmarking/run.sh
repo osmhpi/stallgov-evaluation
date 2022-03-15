@@ -27,7 +27,7 @@ for ((i=1;i<=TEST_COUNT;i++)); do
     read -r TEST<"$PROGRESS_FILE"
     echo "Running test $i/$TEST_COUNT: $TEST"
 
-    (cd .. && ./evaluate_benchmarks.sh "../utils/workloads/$TEST")
+    (cd .. && ./evaluate_benchmarks.sh "utils/workloads/$TEST")
 
     # remove current test (first line)
     sed -i '1d' "$PROGRESS_FILE"

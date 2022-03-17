@@ -18,6 +18,10 @@ if [ -z $OUTPUT_DIRECTORY ]; then
     OUTPUT_DIRECTORY="."
 fi
 
+if [ -z $TEST_RUNS ]; then
+    TEST_RUNS=3
+fi
+
 PERF_ENERGY_EVENT_PARAMS=""
 if [ -z $TRACKED_ENERGY_EVENTS ]; then
     PERF_ENERGY_EVENT_PARAMS="-e energy-pkg"
@@ -32,4 +36,4 @@ set -e
 
 # The --all-cpus option is necessary, as otherwise the rapl energy counters are not supported by perf for some reason.
 # In that case it would be necessary to run perf twice, once for energy counters and once for performance counter meeasurement
-$PERF stat $PERF_ENERGY_EVENT_PARAMS -e cycles -e task-clock --all-cpus -o "$OUTPUT_DIRECTORY/$1.txt" -r 3 $2
+$PERF stat $PERF_ENERGY_EVENT_PARAMS -e cycles -e task-clock --all-cpus -o "$OUTPUT_DIRECTORY/$1.txt" -r $TEST_RUNS $2

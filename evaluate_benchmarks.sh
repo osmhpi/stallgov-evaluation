@@ -18,8 +18,8 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-if [ -z $OUTPUT_DIRECTORY ]; then
-    OUTPUT_DIRECTORY="results/new"
+if [ -z $BENCHMARK_OUTPUT_DIRECTORY ]; then
+    BENCHMARK_OUTPUT_DIRECTORY="results/new"
 fi
 
 POSITIONAL=()
@@ -28,7 +28,7 @@ while [[ $# -gt 0 ]]; do
 
     case $key in
         --output)
-                OUTPUT_DIRECTORY="$2"
+                BENCHMARK_OUTPUT_DIRECTORY="$2"
                 shift # past argument
                 shift # past value
                 ;;
@@ -44,9 +44,6 @@ while [[ $# -gt 0 ]]; do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-mkdir -p "$OUTPUT_DIRECTORY"
-export OUTPUT_DIRECTORY="$OUTPUT_DIRECTORY"
-
 if [ -z $CPUPOWER ]; then
     CPUPOWER=cpupower
 fi
@@ -58,11 +55,13 @@ do
     echo "####### Running workload $workload ##########"
 
     workload_name=$(basename "$workload")
+    OUTPUT_DIRECTORY="$BENCHMARK_OUTPUT_DIRECTORY/$workload_name"
+    mkdir -p "$OUTPUT_DIRECTORY"
+    export OUTPUT_DIRECTORY="$OUTPUT_DIRECTORY"
     set -x
 
-
     $CPUPOWER frequency-set -g memutil
-    log_output_directory="$OUTPUT_DIRECTORY/$workload_name-memutil-log"
+    log_output_directory="$OUTPUT_DIRECTORY/memutil-log"
     mkdir -p "$log_output_directory"
     # Copying the current log will clear it, so we start with a fresh log
     cp /sys/kernel/debug/memutil/log /dev/null

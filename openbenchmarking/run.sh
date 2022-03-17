@@ -12,6 +12,8 @@ TEST_LIST_FILE="openbenchmarking.tests"
 # this file saves the progress in the test set
 PROGRESS_FILE="running_tests.lock"
 
+export TEST_RUNS=1
+
 if [ ! -s "$PROGRESS_FILE" ]; then
     echo "Starting new run"
     # copy all installed tests into test set

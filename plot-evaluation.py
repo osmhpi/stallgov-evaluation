@@ -23,11 +23,14 @@ def parse_frequency(line):
 
 
 def parse_energy(line):
-    match = re.match(r"\s*([0-9,.]+) Joules energy-pkg\s+#\s+[0-9,.]+ K?/sec\s+\( \+-\s+([0-9,.]+)% \)", line)
+    match = re.match(r"\s*([0-9,.]+) Joules energy-pkg\s+#\s+[0-9,.]+ K?/sec(?:\s+\( \+-\s+([0-9,.]+)% \))?", line)
     if not match:
         raise Exception("Error parsing energy measurement line. Line is: " + line)
     energy = match.group(1).replace(thousand_char, "")
-    deviation = match.group(2).replace(thousand_char, "")
+    if match.group(2):
+        deviation = match.group(2).replace(thousand_char, "")
+    else:
+        deviation = "0"
     if decimal_point_char != ".":
         energy = energy.replace(decimal_point_char, ".")
         deviation = deviation.replace(decimal_point_char, ".")
@@ -35,11 +38,14 @@ def parse_energy(line):
 
 
 def parse_time(line):
-    match = re.match(r"\s*([0-9,.]+) \+- ([0-9,.]+) seconds time elapsed", line)
+    match = re.match(r"\s*([0-9,.]+) (?:\+- ([0-9,.]+))? *seconds time elapsed", line)
     if not match:
         raise Exception("Error parsing time measurement line. Line is: " + line)
     time = match.group(1).replace(thousand_char, "")
-    deviation = match.group(2).replace(thousand_char, "")
+    if match.group(2):
+        deviation = match.group(2).replace(thousand_char, "")
+    else:
+        deviation = "0"
     if decimal_point_char != ".":
         time = time.replace(decimal_point_char, ".")
         deviation = deviation.replace(decimal_point_char, ".")
@@ -206,6 +212,7 @@ ax.legend(additional_lines + lines, additional_labels + labels)
 
 if args.output_file:
     fig.savefig(args.output_file)
+    print("Saved to %s" % args.output_file)
 else:
     plt.show()
 

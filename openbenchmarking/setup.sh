@@ -38,7 +38,7 @@ WORKLOAD_DIRECTORY="../utils/workloads"
 mkdir -p "$WORKLOAD_DIRECTORY"
 for TEST in $TESTS; do
     echo "installing $TEST"
-    # phoronix-test-suite install-dependencies ${TEST}
+    phoronix-test-suite install-dependencies ${TEST}
     phoronix-test-suite batch-install $TEST
     workload_file="$WORKLOAD_DIRECTORY/$(echo $TEST | sed -e 's/\//_/g')"
     echo -e "#!/usr/bin/env bash\nphoronix-test-suite batch-run $TEST" > "$workload_file"

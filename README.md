@@ -1,5 +1,30 @@
 # Evaluation
 
+This folder contains utilities and workloads for evaluating the performance of memutil.
+It also contains the results of our own evaluations in the `results` folder.
+
+The evaluations were performed on the following machines:
+- Leon - Laptop
+  - Gigabyte Aero 14
+  - i7 6700HQ
+  - 16GB RAM DDR4
+  - Fedora 34 - KDE Spin
+- Erik - Intel
+  - Dell XPS 13-7390
+  - i7-10510U
+  - 16GB RAM DDR4
+  - Ubuntu 21.10
+- Erik - AMD
+  - Ryzen 9 5900X
+  - 32GB RAM DDR4
+  - Ubuntu 21.10
+
+The `openbenchmarking` folder contains scripts to set up and run the phoronix test suite.
+
+The `utils` folder contains utility scripts for running&measuring workloads, as well as plotting and analyzing different results.
+
+This folder only contains the higher-level scripts that can be used to evaluate multiple workloads at once.
+
 ## ./evaluate_benchmarks.sh
 
 The purpose of this script is to run a list of workloads on the schedutil and memutil CpuFreq Governors, as well as a list of predefined frequencies.
@@ -30,3 +55,15 @@ The ./plot-evaluation.py script can be used to generate image files with the ene
 
 You can also plot the memutil workload log using the `plot-log.sh` in the `utils` directory.
 
+## evalute_perf_counters.sh
+This script will run the provided workloads three times and store the memutil log for all of them.
+
+This is specifically useful to evaluate different performance counters used by memutil.
+It can i.e. be used in conjunction with the event_name1-3 module parameters to quickly change between and evaluate different performance counters.
+
+## plot-evaluation.py
+This script plots the result of an evaluation run performed by `evaluate_benchmarks.sh` for a single workload.
+See the `--help` option for usage details.
+
+## plot-multiple.sh
+Runs plot-evaluation.py for multiple workloads and stitches the resulting image files together into one combined image containing multiple graphs.

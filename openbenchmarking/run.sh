@@ -40,7 +40,7 @@ for ((i=1;i<=TEST_COUNT;i++)); do
         export FORCE_TIMES_TO_RUN=1 # Default run just 1 time
     fi
 
-    (cd .. && ./evaluate_benchmarks.sh "utils/workloads/$TEST")
+    (cd .. && ./evaluate_benchmarks.sh "utils/workloads/${TEST//\//_}") # / in the test name is replaced with _
 
     # remove current test (first line)
     sed -i '1d' "$PROGRESS_FILE"

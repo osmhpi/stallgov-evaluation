@@ -24,6 +24,11 @@ fi
 
 phoronix-test-suite --version
 
+echo "Configure Test Suite"
+
+phoronix-test-suite user-config-set RemoveDownloadFiles=TRUE
+phoronix-test-suite user-config-set SymLinkFilesFromCache=TRUE
+
 echo "Installing Tests"
 
 TEST_LIST_FILE="openbenchmarking.tests"

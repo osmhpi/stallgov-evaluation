@@ -16,7 +16,6 @@ system/compress-pbzip2
 
 ## memory
 mcperf
-multichase
 mbw
 
 ## cryptography

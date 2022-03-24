@@ -36,6 +36,7 @@ TEST_LIST_FILE="openbenchmarking.tests"
 PROGRESS_FILE="running_tests.lock"
 
 export TEST_RUNS=3 # configures re-executes by perf
+export FORCE_TIMES_TO_RUN=1 # configures re-runs of benchmark suite (can be overwritten in openbenchmarkings.tests)
 
 if [ ! -s "$PROGRESS_FILE" ]; then
     echo "Starting new run"

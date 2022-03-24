@@ -143,7 +143,7 @@ parser = argparse.ArgumentParser(description="Plot memory bound util performance
                                              "are expected to exist similar files for the governors / intel_pstate "
                                              "settings active (active.txt, active-freq.txt), passive (passive.txt, "
                                              "passive-freq.txt), disabled (disabled.txt, disabled-freq.txt)")
-parser.add_argument("workload", metavar="output", type=str, help="name of the workload to plot")
+parser.add_argument("workload_name", metavar="workload", type=str, help="name of the workload to plot")
 parser.add_argument("input_folder", metavar="input", type=str, help="path to folder containing all input files")
 parser.add_argument("output_file", metavar="output", nargs='?', type=str, default='', help="output image path - plot will be displayed if left empty")
 parser.add_argument("--show_deviation", "-sd", action="store_true", default=False, help="Show deviation around plots")
@@ -165,8 +165,8 @@ if args.german_float:
 plot_map = {"energy": plot_energy, "time": plot_time, "power": plot_power, "edp": plot_energy_delay_product,
             "energy_delay_product": plot_energy_delay_product}
 
-fixed_frequency_measurements = read_frequency_measurements(args.input_folder, args.workload)
-governor_measurements = read_governor_measurements(args.input_folder, args.workload)
+fixed_frequency_measurements = read_frequency_measurements(args.input_folder, args.workload_name)
+governor_measurements = read_governor_measurements(args.input_folder, args.workload_name)
 fixed_frequency_measurements.sort(key=itemgetter(0))
 
 frequency_energies = list(map(lambda entry: entry[1], fixed_frequency_measurements))

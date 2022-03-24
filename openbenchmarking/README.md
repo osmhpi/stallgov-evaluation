@@ -11,19 +11,6 @@ Use `setup.sh` to install the Phoronix Test Suite and its dependencies via APT. 
 
 Furthermore, the setup script installs the given tests listed in `openbenchmarking.tests` and creates run scripts for each of them in `../utils/workloads/`. If test dependencies are not installed correctly, you can comment in `setup.sh:41` or use this line to install missing dependencies yourself.
 
-To complete the setup, run `phoronix-test-suite batch-setup` to prepare the Phoronix Test Suite for batch mode.
-Recommended settings are (you don't have to upload your results):
-```
-Save test results when in batch mode (Y/n): Y
-Open the web browser automatically when in batch mode (y/N): N
-Auto upload the results to OpenBenchmarking.org (Y/n): Y
-Prompt for test identifier (Y/n): n
-Prompt for test description (Y/n): n
-Prompt for saved results file-name (Y/n): n
-Run all test options (Y/n): Y
-```
-It is important to deny prompts, because they are not handled by our run script. Also, `run all test options` is needed for some tests, because they ask to select a run configuration.
-
 ## Running
 
 To start a new test suite run, use `run.sh`. This will create a lock file which contains all remaining tests to be executed and will be updated after each test, so that you can interrupt this at any time and continue later. This script executes `../evaluate_benchmarks.sh` for each test with the matching workload script from `../utils/workloads`, which itself calls the Phoronix Test Suite batch-run.

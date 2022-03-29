@@ -19,7 +19,7 @@ mcperf PRESET_OPTIONS:mcperf.method=1;mcperf.connections=0
 mbw PRESET_OPTIONS:mbw.run-test=0;mbw.array-size=3
 
 ## cryptography
-blake2
+blake2 FORCE_TIMES_TO_RUN:5
 
 ## database
 redis PRESET_OPTIONS:redis.test=0

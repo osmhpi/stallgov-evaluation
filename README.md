@@ -18,6 +18,10 @@ The evaluations were performed on the following machines:
   - Ryzen 9 5900X
   - 32GB RAM DDR4
   - Ubuntu 21.10
+- Max - AMD
+  - Ryzen 5 3600X
+  - 64GB RAM DDR4
+  - Ubuntu / Kernel 5.17.0-rc2
 
 The `openbenchmarking` folder contains scripts to set up and run the phoronix test suite.
 

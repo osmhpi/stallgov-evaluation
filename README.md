@@ -71,3 +71,5 @@ See the `--help` option for usage details.
 
 ## plot-multiple.sh
 Runs plot-evaluation.py for multiple workloads and stitches the resulting image files together into one combined image containing multiple graphs.
+Note that if the numbers of the output files are in german format (see plot-evaluation help) this script does not account for that. You would need to
+manually add "-gf" to the call in this script.

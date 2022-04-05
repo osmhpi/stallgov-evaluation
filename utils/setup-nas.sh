@@ -17,4 +17,3 @@ make FT CLASS=D
 make IS CLASS=B
 make IS CLASS=C
 make IS CLASS=D
-make IS CLASS=E

@@ -25,7 +25,8 @@ while [[ $# -gt 0 ]]; do
 			shift # past value
 			;;
 		--help)
-			echo "./plot.sh <bench_run_folder> [workload_names...] --number_format=[EN]/DE"
+			echo "./plot.sh <bench_run_folder> [workload_names...] [--number_format EN/DE]"
+			echo "Default number format is EN"
 			exit 0
 			;;
 		*) # unknown option
@@ -37,7 +38,8 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
 if [ "$#" -le "0" ]; then
-    echo "./plot.sh <bench_run_folder> [workload_names...] --number_format=[EN]/DE"
+    echo "./plot.sh <bench_run_folder> [workload_names...] [--number_format EN/DE]"
+    echo "Default number format is EN"
     exit 1
 fi
 

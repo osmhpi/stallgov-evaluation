@@ -9,7 +9,7 @@ This test suite contains multiple tests from openbenchmarking.org which are sele
 
 Use `setup.sh` to install the Phoronix Test Suite and its dependencies via APT. If your system uses another package manager, please use https://github.com/phoronix-test-suite/phoronix-test-suite/releases/ to download the current package.
 
-Furthermore, the setup script installs the given tests listed in `openbenchmarking.tests` and creates run scripts for each of them in `../utils/workloads/`. If test dependencies are not installed correctly, you can comment in `setup.sh:41` or use this line to install missing dependencies yourself.
+Furthermore, the setup script installs the given tests listed in `openbenchmarking.tests` and creates run scripts for each of them in `../utils/workloads/`.
 
 ## Running
 

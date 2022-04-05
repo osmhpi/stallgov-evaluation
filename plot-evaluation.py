@@ -120,7 +120,7 @@ def plot_time(ax, color, show_deviation, frequencies, energies, times):
         ax.fill_between(frequencies, max_times, min_times, alpha=0.5, linewidth=0, color=color)
 
     ax.plot(frequencies, avg_times, color=color, label="execution time")
-    ax.set_ylabel("runtime (in seconds)")
+    ax.set_ylabel("execution time (in seconds)")
     ax.set_ylim(ymin=0)
 
 

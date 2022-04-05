@@ -19,4 +19,4 @@ Output will be written to `../results/new` by default, but can be configured usi
 
 Each test will run for each frequency, defined by `../frequencies.config`.
 
-Because the test suite already runs test multiple times themselves, the environment variable `TEST_RUNS` is set to 1 by default.
+Test specific environment variables can be defined in the `openbenchmarking.tests` as `KEY:VALUE` pairs after the test name. This is used for some tests to provide `PRESET_OPTIONS` to the Phoronix Test Suite.

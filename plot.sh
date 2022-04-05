@@ -3,7 +3,7 @@
 BENCH_RUN_FOLDER=""
 WORKLOAD_NAMES=""
 OUTPUT_FILE="output.png"
-NUMBER_FORMAT_PARAM="sd"
+NUMBER_FORMAT_PARAM=""
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
@@ -11,10 +11,10 @@ while [[ $# -gt 0 ]]; do
 		--number_format)
             case "$2" in
                 EN)
-                    NUMBER_FORMAT_PARAM="sd"
+                    NUMBER_FORMAT_PARAM=""
                     ;;
                 DE)
-                    NUMBER_FORMAT_PARAM="gf"
+                    NUMBER_FORMAT_PARAM="-gf"
                     ;;
                 *)
                     echo "invalid number format - possible values: EN, DE"
@@ -56,5 +56,5 @@ fi
 for WORKLOAD_NAME in $WORKLOAD_NAMES; do
     TEST_RUN_FOLDER="$BENCH_RUN_FOLDER/$WORKLOAD_NAME"
     echo "Plotting $TEST_RUN_FOLDER"
-    python plot-evaluation.py "$WORKLOAD_NAME" "$TEST_RUN_FOLDER" "$TEST_RUN_FOLDER/$OUTPUT_FILE" -sp time -$NUMBER_FORMAT_PARAM
+    python plot-evaluation.py -sd -sp time $NUMBER_FORMAT_PARAM "$WORKLOAD_NAME" "$TEST_RUN_FOLDER" "$TEST_RUN_FOLDER/$OUTPUT_FILE"
 done

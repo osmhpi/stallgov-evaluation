@@ -86,7 +86,7 @@ def read_frequency_measurements(input_folder, workload):
 
 
 def read_governor_measurements(input_folder, workload):
-    measurement_files = ["memutil.txt", "schedutil.txt"]
+    measurement_files = ["schedutil.txt", "memutil.txt"]
     measurements = dict()
     for file in measurement_files:
         complete_path = input_folder + "/" + workload + "-" + file
@@ -195,7 +195,7 @@ if args.second_plot != "none":
     additional_lines, additional_labels = ax2.get_legend_handles_labels()
     colormap_offset = 2
 
-governor_marker = ['+', 'x', 'o', 's', '<', '>']
+governor_marker = ['x', '+', 'o', 's', '<', '>']
 
 for index, governor in enumerate(governor_measurements):
     ax.scatter([governor_measurements[governor][0]], [governor_measurements[governor][1][0]],

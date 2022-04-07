@@ -107,7 +107,7 @@ def plot_energy(ax, color, show_deviation, frequencies, energies, times):
         ax.fill_between(frequencies, max_energies, min_energies, alpha=0.5, linewidth=0, color=color)
 
     ax.plot(frequencies, avg_energies, color=color, label="package energy")
-    ax.set_ylabel("energy (in Joules)")
+    ax.set_ylabel("energy (in Joules)", color=color)
     ax.set_ylim(ymin=0)
 
 
@@ -120,7 +120,7 @@ def plot_time(ax, color, show_deviation, frequencies, energies, times):
         ax.fill_between(frequencies, max_times, min_times, alpha=0.5, linewidth=0, color=color)
 
     ax.plot(frequencies, avg_times, color=color, label="execution time")
-    ax.set_ylabel("execution time (in seconds)")
+    ax.set_ylabel("execution time (in seconds)", color=color)
     ax.set_ylim(ymin=0)
 
 
@@ -147,6 +147,7 @@ parser.add_argument("workload_name", metavar="workload", type=str, help="name of
 parser.add_argument("input_folder", metavar="input", type=str, help="path to folder containing all input files")
 parser.add_argument("output_file", metavar="output", nargs='?', type=str, default='', help="output image path - plot will be displayed if left empty")
 parser.add_argument("--show_deviation", "-sd", action="store_true", default=False, help="Show deviation around plots")
+parser.add_argument("--no-legend", "-nl", action="store_true", default=False, help="Disable the legend")
 parser.add_argument("--first_plot", "-fp", default="energy", type=str, choices=["energy", "time", "power", "edp",
                                                                                 "energy_delay_product"],
                     help="Type of first plot")
@@ -174,6 +175,7 @@ frequency_times = list(map(lambda entry: entry[2], fixed_frequency_measurements)
 frequencies = list(map(lambda entry: entry[0], fixed_frequency_measurements))
 
 plt.rcParams.update({'figure.autolayout': True})
+plt.rcParams.update({'font.size': 20})
 
 colormap = plt.get_cmap("Set1")
 fig, ax = plt.subplots()
@@ -208,7 +210,9 @@ for index, governor in enumerate(governor_measurements):
                #  color=colormap(index+colormap_offset))
 
 lines, labels = ax.get_legend_handles_labels()
-ax.legend(additional_lines + lines, additional_labels + labels)
+
+if not args.no_legend:
+    ax.legend(additional_lines + lines, additional_labels + labels)
 
 if args.output_file:
     fig.savefig(args.output_file)

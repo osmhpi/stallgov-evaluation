@@ -85,8 +85,8 @@ def read_frequency_measurements(input_folder, workload):
     return measurements
 
 
-def read_governor_measurements(input_folder, workload):
-    measurement_files = ["schedutil.txt", "memutil.txt"]
+def read_governor_measurements(input_folder, workload, disable_memutil):
+    measurement_files = ["schedutil.txt"] if disable_memutil else ["schedutil.txt", "memutil.txt"]
     measurements = dict()
     for file in measurement_files:
         complete_path = input_folder + "/" + workload + "-" + file
@@ -148,6 +148,7 @@ parser.add_argument("input_folder", metavar="input", type=str, help="path to fol
 parser.add_argument("output_file", metavar="output", nargs='?', type=str, default='', help="output image path - plot will be displayed if left empty")
 parser.add_argument("--show_deviation", "-sd", action="store_true", default=False, help="Show deviation around plots")
 parser.add_argument("--no-legend", "-nl", action="store_true", default=False, help="Disable the legend")
+parser.add_argument("--no-memutil", "-nm", action="store_true", default=False, help="Disable plotting memutil")
 parser.add_argument("--first_plot", "-fp", default="energy", type=str, choices=["energy", "time", "power", "edp",
                                                                                 "energy_delay_product"],
                     help="Type of first plot")
@@ -167,7 +168,7 @@ plot_map = {"energy": plot_energy, "time": plot_time, "power": plot_power, "edp"
             "energy_delay_product": plot_energy_delay_product}
 
 fixed_frequency_measurements = read_frequency_measurements(args.input_folder, args.workload_name)
-governor_measurements = read_governor_measurements(args.input_folder, args.workload_name)
+governor_measurements = read_governor_measurements(args.input_folder, args.workload_name, args.no_memutil)
 fixed_frequency_measurements.sort(key=itemgetter(0))
 
 frequency_energies = list(map(lambda entry: entry[1], fixed_frequency_measurements))
@@ -175,7 +176,6 @@ frequency_times = list(map(lambda entry: entry[2], fixed_frequency_measurements)
 frequencies = list(map(lambda entry: entry[0], fixed_frequency_measurements))
 
 plt.rcParams.update({'figure.autolayout': True})
-plt.rcParams.update({'font.size': 20})
 
 colormap = plt.get_cmap("Set1")
 fig, ax = plt.subplots()
@@ -199,10 +199,10 @@ governor_marker = ['x', '+', 'o', 's', '<', '>']
 
 for index, governor in enumerate(governor_measurements):
     ax.scatter([governor_measurements[governor][0]], [governor_measurements[governor][1][0]],
-               marker=governor_marker[index], c='red', s=80, label=governor + " - Energy")
+               marker=governor_marker[index], c='red', s=80, label=governor + " - energy")
     if ax2:
         ax2.scatter([governor_measurements[governor][0]], [governor_measurements[governor][2][0]],
-                   marker=governor_marker[index], s=80, c='blue', label=governor + " - Execution Time")
+                   marker=governor_marker[index], s=80, c='blue', label=governor + " - execution time")
         additional_lines, additional_labels = ax2.get_legend_handles_labels()
     # Reenable the following code to draw an x-line instead
     # of a point for each measured governor.
@@ -215,7 +215,7 @@ if not args.no_legend:
     ax.legend(additional_lines + lines, additional_labels + labels)
 
 if args.output_file:
-    fig.savefig(args.output_file)
+    fig.savefig(args.output_file, dpi = 300)
     print("Saved to %s" % args.output_file)
 else:
     plt.show()

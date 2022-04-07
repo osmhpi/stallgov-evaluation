@@ -175,10 +175,10 @@ frequency_times = list(map(lambda entry: entry[2], fixed_frequency_measurements)
 frequencies = list(map(lambda entry: entry[0], fixed_frequency_measurements))
 
 plt.rcParams.update({'figure.autolayout': True})
-plt.rcParams.update({'font.size': 20})
 
 colormap = plt.get_cmap("Set1")
 fig, ax = plt.subplots()
+fig.set_size_inches(4,3)
 
 ax.set_xlabel("frequency (in GHz)")
 ax.set_title(args.title)
@@ -199,10 +199,10 @@ governor_marker = ['x', '+', 'o', 's', '<', '>']
 
 for index, governor in enumerate(governor_measurements):
     ax.scatter([governor_measurements[governor][0]], [governor_measurements[governor][1][0]],
-               marker=governor_marker[index], c='red', s=80, label=governor + " - Energy")
+               marker=governor_marker[index], c='red', s=80, label=governor + " - energy")
     if ax2:
         ax2.scatter([governor_measurements[governor][0]], [governor_measurements[governor][2][0]],
-                   marker=governor_marker[index], s=80, c='blue', label=governor + " - Execution Time")
+                   marker=governor_marker[index], s=80, c='blue', label=governor + " - execution time")
         additional_lines, additional_labels = ax2.get_legend_handles_labels()
     # Reenable the following code to draw an x-line instead
     # of a point for each measured governor.
@@ -215,7 +215,7 @@ if not args.no_legend:
     ax.legend(additional_lines + lines, additional_labels + labels)
 
 if args.output_file:
-    fig.savefig(args.output_file)
+    fig.savefig(args.output_file, dpi=300)
     print("Saved to %s" % args.output_file)
 else:
     plt.show()

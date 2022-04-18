@@ -61,7 +61,7 @@ def plot_results(title, plot_op, folder_name, plot_names, cores_argument, scale)
         base_name = str(file).removesuffix("-memutil-log")
         img_path = base_name + ".png"
         workload_name = base_name.removeprefix(folder_name + "/")
-        plot_arguments = ["plot-log.py", "-t", workload_name + ": " + title, "-s", str(scale), '--plot_names']
+        plot_arguments = ["./plot-log.py", "-t", workload_name + ": " + title, "-s", str(scale), '--plot_names']
         plot_arguments.extend(plot_names)
         if cores_argument:
             plot_arguments.append("-c")
